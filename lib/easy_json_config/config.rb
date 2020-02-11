@@ -4,8 +4,8 @@ module EasyJSON
   end
 
   # Shorter, more readable config instantiation
-  def self.config(path = nil)
-    EasyJSON::Config.new(path)
+  def self.config(path: nil, defaults: nil)
+    EasyJSON::Config.new(path: path, defaults: defaults)
   end
 
   class Config
@@ -27,18 +27,23 @@ module EasyJSON
     end
 
     # override the new method to return existing class if it exists
-    def self.new(path = nil)
+    def self.new(path: nil, defaults: nil)
       path = ::File.expand_path(path || 'config.json')
       instance = EasyJSON.configs[path] # return existing instance if one already exists for the path provided
-      return instance unless instance.nil?
-      EasyJSON.configs[path] = super(path)
+      unless instance.nil?
+        instance.add_defaults(defaults)
+        return instance
+      end
+      EasyJSON.configs[path] = super(path, defaults)
     end
 
     private
 
-    def initialize(path = nil)
+    def initialize(path, defaults)
       @path = path
-      @json_config = ::File.exists?(path) ? JSON.parse(::File.read(path)) : {}
+      @defaults = defaults
+      ::File.write(path, "{\n}") unless ::File.exists?(path) # Add empty config if none exists
+      @json_config = JSON.parse(::File.read(path))
     end
   end
 end
