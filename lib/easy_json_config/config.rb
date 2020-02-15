@@ -9,6 +9,7 @@ module EasyJSON
   end
 
   class Config
+    @sensitive_keys = %w(credentials Credentials password Password)
     attr_reader :path
 
     # Add a hash of default keys and values to be merged over the current defaults (if any).
@@ -19,11 +20,24 @@ module EasyJSON
 
     # returns a hash containing the json config file values merged over the default values.
     def values
-      EasyFormat.deep_merge(defaults, @json_config)
+      EasyFormat.deep_merge(@defaults, @json_config)
+    end
+
+    def values_without_sensitive_keys
+      EasyFormat::Hash.deep_reject(values) { |k, _v| @sensitive_keys.include?(k) }
     end
 
     def save
-      ::File.write(path, values)
+      ::File.write(path, values_without_sensitive_keys.to_json)
+    end
+
+    def add_sensitive_keys(keys)
+      keys = [keys] if keys.is_a?(String) || keys.is_a?(Symbol)
+      @sensitive_keys = (@sensitive_keys + keys).uniq
+    end
+
+    def clear_sensitive_keys
+      @sensitive_keys = []
     end
 
     # override the new method to return existing class if it exists
@@ -42,7 +56,7 @@ module EasyJSON
     def initialize(path, defaults)
       @path = path
       @defaults = defaults
-      ::File.write(path, "{\n}") unless ::File.exists?(path) # Add empty config if none exists
+      ::File.write(path, "{\n}") unless ::File.exist?(path) # Add empty config if none exists
       @json_config = JSON.parse(::File.read(path))
     end
   end
