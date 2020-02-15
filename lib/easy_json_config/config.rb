@@ -12,6 +12,10 @@ module EasyJSON
     @sensitive_keys = %w(credentials Credentials password Password)
     attr_reader :path
 
+    def [](key)
+      values[key]
+    end
+
     # Add a hash of default keys and values to be merged over the current defaults (if any).
     # The json config can override these values.
     def add_defaults(new_defaults)
