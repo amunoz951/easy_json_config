@@ -16,6 +16,17 @@ module EasyJSON
       @config = Hashly.deep_merge(@config, @frozen_values)
       @config[key]
     end
+
+    def []=(key, value)
+      @config[key] = value
+    end
+
+    def to_s
+      "Config path: #{path}\nContent: #{JSON.pretty_generate @config}"
+    end
+
+    def to_h
+      Hashly.deep_merge(@config, @frozen_values).to_h
     end
 
     # Add a hash of default keys and values to be merged over the current defaults (if any).
