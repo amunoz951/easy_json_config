@@ -16,5 +16,5 @@
 # limitations under the License.
 
 require 'json'
-require 'easy_format'
+require 'hashly'
 require_relative 'easy_json_config/config'

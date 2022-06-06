@@ -15,5 +15,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'json', '~> 2'
-  spec.add_dependency 'easy_format', '~> 0'
+  spec.add_dependency 'hashly', '~> 0'
 end
